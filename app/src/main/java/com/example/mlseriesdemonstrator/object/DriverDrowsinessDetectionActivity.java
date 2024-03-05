@@ -22,6 +22,7 @@ public class DriverDrowsinessDetectionActivity extends MLVideoHelperActivity {
     private static final long UPDATE_INTERVAL_MS = 500; // 1000ms = 1 segund
     private FaceDrowsinessDetectorProcessor processor;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private FaceDrowsiness faceDrowsiness;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,32 +35,39 @@ public class DriverDrowsinessDetectionActivity extends MLVideoHelperActivity {
         drowsyTextView = findViewById(R.id.drowsyTextView);
 
         processor = new FaceDrowsinessDetectorProcessor(graphicOverlay);
+        faceDrowsiness = FaceDrowsiness.getInstance();
+        faceDrowsiness.initialize(getApplicationContext());
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                FaceDrowsiness faceDrowsiness = FaceDrowsiness.getInstance();
 
+                // TextView 1 - Probabilidades de Abertura dos Olhos
                 float leftEyeProb = faceDrowsiness.getLeftEyeOpenProb();
                 float rightEyeProb = faceDrowsiness.getRightEyeOpenProb();
-                float perclos = (float) faceDrowsiness.getPerclos();
+                leftEyeTextView.setText(String.format(Locale.US, "Left Eye: %.2f, Right Eye: %.2f", leftEyeProb, rightEyeProb));
 
-                Log.d("FaceDrowsiness", "Left eye open probability: " + leftEyeProb + "Right eye open probability: " + rightEyeProb);
+                // TextView 2 - Média de PERCLOS e FPS
+                double averagePerclos = faceDrowsiness.getAveragePerclos();
+                double fps = faceDrowsiness.getFps();
+                rightEyeTextView.setText(String.format(Locale.US, "Avg Perclos: %.2f%%, FPS: %.2f", averagePerclos, fps));
 
-                leftEyeTextView.setText(String.format(Locale.US, "Left Eye Open Probability: %.2f", leftEyeProb));
-                rightEyeTextView.setText(String.format(Locale.US, "Right Eye Open Probability: %.2f", rightEyeProb));
-                perclosTextView.setText(String.format(Locale.US, "Perclos Probability: %.2f", perclos));
+                // TextView 3 - Contagem Total de Medições e Medições com Olhos Fechados
+                int totalMeasurements = faceDrowsiness.getTotalMeasurements();
+                int closedEyeMeasurements = faceDrowsiness.getClosedEyeMeasurements();
+                perclosTextView.setText(String.format(Locale.US, "Total: %d, Closed: %d", totalMeasurements, closedEyeMeasurements));
 
+                // TextView 4 - Estado de Sonolência e Contagem de Frames com Olhos Fechados
+                int closedEyeFrameCount = faceDrowsiness.getClosedEyeFrameCount();
                 boolean drowsy = faceDrowsiness.getDrowsy();
+                String drowsyStatus = drowsy ? "Detected" : "Not Detected";
+                drowsyTextView.setText(String.format(Locale.US, "Drowsiness: %s, Closed Frames: %d", drowsyStatus, closedEyeFrameCount));
                 if (drowsy) {
-                    // Sono detectado - Texto em vermelho
-                    drowsyTextView.setText("Sono detectado");
                     drowsyTextView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
                 } else {
-                    // Sono não detectado - Texto em verde
-                    drowsyTextView.setText("Sono não detectado");
                     drowsyTextView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.green));
                 }
+
 
                 handler.postDelayed(this, UPDATE_INTERVAL_MS);
             }
@@ -72,6 +80,7 @@ public class DriverDrowsinessDetectionActivity extends MLVideoHelperActivity {
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null); // Limpe o handler ao destruir a activity
+        faceDrowsiness.releaseMediaPlayer();
     }
 
     @Override
