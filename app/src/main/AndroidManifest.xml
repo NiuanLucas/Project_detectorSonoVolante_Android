@@ -18,6 +18,7 @@
         </intent>
     </queries>
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -67,6 +68,10 @@
 
         <activity android:name=".object.ObscureFaceActivity"
             android:screenOrientation="userPortrait" />
+
+        <service
+            android:name=".helpers.vision.drowsiness.DrowsinessDetectionService"
+            android:exported="false" />
 
         <!-- make sure within the application tag, otherwise app will crash with XmlResourceParser errors -->
         <provider

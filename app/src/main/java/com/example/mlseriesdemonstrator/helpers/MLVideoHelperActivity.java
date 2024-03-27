@@ -3,6 +3,7 @@ package com.example.mlseriesdemonstrator.helpers;
 import static androidx.camera.view.PreviewView.*;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +34,7 @@ import androidx.lifecycle.Observer;
 import com.example.mlseriesdemonstrator.R;
 import com.example.mlseriesdemonstrator.helpers.vision.GraphicOverlay;
 import com.example.mlseriesdemonstrator.helpers.vision.VisionBaseProcessor;
+import com.example.mlseriesdemonstrator.helpers.vision.drowsiness.DrowsinessDetectionService;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -71,6 +73,9 @@ public abstract class MLVideoHelperActivity extends AppCompatActivity {
         graphicOverlay = findViewById(R.id.graphic_overlay);
         outputTextView = findViewById(R.id.output_text_view);
         addFaceButton = findViewById(R.id.button_add_face);
+
+        Intent serviceIntent = new Intent(this, DrowsinessDetectionService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
 
         // Obtém o futuro do provedor de câmera
         cameraProviderFuture = ProcessCameraProvider.getInstance(getApplicationContext());
