@@ -1,6 +1,7 @@
+// Define o pacote ao qual esta classe pertence
 package com.example.mlseriesdemonstrator.helpers.vision.drowsiness;
 
-
+// Importações de bibliotecas e classes necessárias
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.util.Log;
@@ -26,19 +27,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-/** Face Drowsiness Detector Demo. */
+/** Documentação da classe para demonstrar a detecção de sonolência facial. */
 public class FaceDrowsinessDetectorProcessor extends VisionBaseProcessor<List<Face>> {
 
-  private static final String MANUAL_TESTING_LOG = "FaceDetectorProcessor";
+  private static final String MANUAL_TESTING_LOG = "FaceDetectorProcessor"; // Tag para logs de teste manual
 
-  private final FaceDetector detector;
-  private FaceDrowsiness faceDrowsiness;
-  private final GraphicOverlay graphicOverlay;
-  private final HashMap<Integer, FaceDrowsiness> drowsinessHashMap = new HashMap<>();
+  private final FaceDetector detector; // O detector de rostos
+  private FaceDrowsiness faceDrowsiness; // Objeto para calcular a sonolência
+  private final GraphicOverlay graphicOverlay; // Overlay gráfico para desenhar os resultados
+  private final HashMap<Integer, FaceDrowsiness> drowsinessHashMap = new HashMap<>(); // Mapa para armazenar dados de sonolência
 
+  // Construtor que configura o detector de rostos e o overlay gráfico
   public FaceDrowsinessDetectorProcessor(GraphicOverlay graphicOverlay) {
     this.graphicOverlay = graphicOverlay;
-    this.faceDrowsiness = new FaceDrowsiness();
+    this.faceDrowsiness = FaceDrowsiness.getInstance();
+    // Opções para o detector de rostos, configurado para ser rápido e detectar todos os marcos e classificações
     FaceDetectorOptions faceDetectorOptions = new FaceDetectorOptions.Builder()
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
             .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
@@ -49,35 +52,36 @@ public class FaceDrowsinessDetectorProcessor extends VisionBaseProcessor<List<Fa
     detector = FaceDetection.getClient(faceDetectorOptions);
   }
 
-  // Método para obter a instância de FaceDrowsiness, se necessário
+  // Método para retornar a instância de FaceDrowsiness
   public FaceDrowsiness getFaceDrowsiness() {
     return faceDrowsiness;
   }
+
+  // Método para detectar rostos na imagem fornecida
   @OptIn(markerClass = ExperimentalGetImage.class)
   public Task<List<Face>> detectInImage(ImageProxy imageProxy, Bitmap bitmap, int rotationDegrees) {
     InputImage inputImage = InputImage.fromMediaImage(imageProxy.getImage(), rotationDegrees);
     int rotation = rotationDegrees;
 
-    // In order to correctly display the face bounds, the orientation of the analyzed
-    // image and that of the viewfinder have to match. Which is why the dimensions of
-    // the analyzed image are reversed if its rotation information is 90 or 270.
+    // Lógica para ajustar as dimensões da imagem com base na rotação
     boolean reverseDimens = rotation == 90 || rotation == 270;
     int width;
     int height;
     if (reverseDimens) {
       width = imageProxy.getHeight();
-      height =  imageProxy.getWidth();
+      height = imageProxy.getWidth();
     } else {
       width = imageProxy.getWidth();
       height = imageProxy.getHeight();
     }
+
+    // Processa a imagem com o detector e lida com os resultados
     return detector.process(inputImage)
             .addOnSuccessListener(faces -> {
               graphicOverlay.clear();
               for (Face face : faces) {
-                // Usar a instância singleton de FaceDrowsiness
-                FaceDrowsiness faceDrowsiness = FaceDrowsiness.getInstance();
-                boolean isDrowsy = faceDrowsiness.isDrowsy(face);
+                FaceDrowsiness faceDrowsinessInstance = FaceDrowsiness.getInstance();
+                boolean isDrowsy = faceDrowsinessInstance.isDrowsy(face);
                 FaceGraphic faceGraphic = new FaceGraphic(graphicOverlay, face, isDrowsy, width, height);
                 graphicOverlay.add(faceGraphic);
               }
@@ -85,73 +89,64 @@ public class FaceDrowsinessDetectorProcessor extends VisionBaseProcessor<List<Fa
             .addOnFailureListener(new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception e) {
-                // intentionally left empty
+                // Logica para lidar com falhas no processamento
               }
             });
   }
 
+  // Método para liberar recursos do detector
   public void stop() {
     detector.close();
   }
 
+  // Método privado para logar informações extras para testes
   private static void logExtrasForTesting(Face face) {
     if (face != null) {
+      // Logs detalhados das características faciais detectadas para fins de teste
       Log.v(MANUAL_TESTING_LOG, "face bounding box: " + face.getBoundingBox().flattenToString());
       Log.v(MANUAL_TESTING_LOG, "face Euler Angle X: " + face.getHeadEulerAngleX());
       Log.v(MANUAL_TESTING_LOG, "face Euler Angle Y: " + face.getHeadEulerAngleY());
       Log.v(MANUAL_TESTING_LOG, "face Euler Angle Z: " + face.getHeadEulerAngleZ());
 
-      // All landmarks
-      int[] landMarkTypes =
-              new int[] {
-                      FaceLandmark.MOUTH_BOTTOM,
-                      FaceLandmark.MOUTH_RIGHT,
-                      FaceLandmark.MOUTH_LEFT,
-                      FaceLandmark.RIGHT_EYE,
-                      FaceLandmark.LEFT_EYE,
-                      FaceLandmark.RIGHT_EAR,
-                      FaceLandmark.LEFT_EAR,
-                      FaceLandmark.RIGHT_CHEEK,
-                      FaceLandmark.LEFT_CHEEK,
-                      FaceLandmark.NOSE_BASE
-              };
-      String[] landMarkTypesStrings =
-              new String[] {
-                      "MOUTH_BOTTOM",
-                      "MOUTH_RIGHT",
-                      "MOUTH_LEFT",
-                      "RIGHT_EYE",
-                      "LEFT_EYE",
-                      "RIGHT_EAR",
-                      "LEFT_EAR",
-                      "RIGHT_CHEEK",
-                      "LEFT_CHEEK",
-                      "NOSE_BASE"
-              };
+      // Itera sobre os tipos de marcos faciais, registrando sua presença e posição
+      int[] landMarkTypes = {
+              FaceLandmark.MOUTH_BOTTOM,
+              FaceLandmark.MOUTH_RIGHT,
+              FaceLandmark.MOUTH_LEFT,
+              FaceLandmark.RIGHT_EYE,
+              FaceLandmark.LEFT_EYE,
+              FaceLandmark.RIGHT_EAR,
+              FaceLandmark.LEFT_EAR,
+              FaceLandmark.RIGHT_CHEEK,
+              FaceLandmark.LEFT_CHEEK,
+              FaceLandmark.NOSE_BASE
+      };
+      String[] landMarkTypesStrings = {
+              "MOUTH_BOTTOM",
+              "MOUTH_RIGHT",
+              "MOUTH_LEFT",
+              "RIGHT_EYE",
+              "LEFT_EYE",
+              "RIGHT_EAR",
+              "LEFT_EAR",
+              "RIGHT_CHEEK",
+              "LEFT_CHEEK",
+              "NOSE_BASE"
+      };
       for (int i = 0; i < landMarkTypes.length; i++) {
         FaceLandmark landmark = face.getLandmark(landMarkTypes[i]);
         if (landmark == null) {
-          Log.v(
-                  MANUAL_TESTING_LOG,
-                  "No landmark of type: " + landMarkTypesStrings[i] + " has been detected");
+          Log.v(MANUAL_TESTING_LOG, "No landmark of type: " + landMarkTypesStrings[i] + " has been detected");
         } else {
           PointF landmarkPosition = landmark.getPosition();
-          String landmarkPositionStr =
-                  String.format(Locale.US, "x: %f , y: %f", landmarkPosition.x, landmarkPosition.y);
-          Log.v(
-                  MANUAL_TESTING_LOG,
-                  "Position for face landmark: "
-                          + landMarkTypesStrings[i]
-                          + " is :"
-                          + landmarkPositionStr);
+          String landmarkPositionStr = String.format(Locale.US, "x: %f , y: %f", landmarkPosition.x, landmarkPosition.y);
+          Log.v(MANUAL_TESTING_LOG, "Position for face landmark: " + landMarkTypesStrings[i] + " is :" + landmarkPositionStr);
         }
       }
-      Log.v(
-              MANUAL_TESTING_LOG,
-              "face left eye open probability: " + face.getLeftEyeOpenProbability());
-      Log.v(
-              MANUAL_TESTING_LOG,
-              "face right eye open probability: " + face.getRightEyeOpenProbability());
+
+      // Logs adicionais para as probabilidades de abertura dos olhos e sorriso, e o ID de rastreamento
+      Log.v(MANUAL_TESTING_LOG, "face left eye open probability: " + face.getLeftEyeOpenProbability());
+      Log.v(MANUAL_TESTING_LOG, "face right eye open probability: " + face.getRightEyeOpenProbability());
       Log.v(MANUAL_TESTING_LOG, "face smiling probability: " + face.getSmilingProbability());
       Log.v(MANUAL_TESTING_LOG, "face tracking id: " + face.getTrackingId());
     }

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Raiz do layout, utilizando ConstraintLayout como o gerenciador de layout. -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Um botão de ação flutuante estendido, inicialmente oculto, para adicionar uma face. -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/button_add_face"
         android:visibility="gone"
@@ -17,6 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Uma PreviewView para exibir a saída da câmera. -->
     <androidx.camera.view.PreviewView
         android:id="@+id/camera_source_preview"
         android:layout_width="match_parent"
@@ -25,6 +28,7 @@
         app:layout_constraintDimensionRatio="3:4"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Overlay gráfico para desenhar sobre a PreviewView. -->
     <com.example.mlseriesdemonstrator.helpers.vision.GraphicOverlay
         android:id="@+id/graphic_overlay"
         android:layout_width="match_parent"
@@ -33,6 +37,7 @@
         app:layout_constraintDimensionRatio="3:4"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Um ImageView para mostrar imagens, por exemplo, uma imagem de teste. -->
     <ImageView
         android:id="@+id/testImageView"
         android:layout_width="200dp"
@@ -40,6 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- TextView para mostrar textos de saída, como resultados de análises. -->
     <TextView
         android:id="@+id/output_text_view"
         android:layout_width="0dp"
@@ -52,7 +58,7 @@
         app:layout_constraintTop_toBottomOf="@+id/camera_source_preview"
         tools:text="Test" />
 
-    <!-- Novo botão para alternar entre câmera frontal e traseira -->
+    <!-- Botão flutuante para alternar a câmera entre frontal e traseira. -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/switchCameraButton"
         android:layout_width="wrap_content"
@@ -63,14 +69,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <!-- Outros componentes do layout, como a PreviewView -->
-
+    <!-- LinearLayout para agrupar múltiplos TextViews relacionados às análises dos olhos e sonolência. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="10dp">
 
+        <!-- TextView para mostrar a probabilidade do olho esquerdo estar aberto. -->
         <TextView
             android:id="@+id/leftEyeTextView"
             android:layout_width="wrap_content"
@@ -79,6 +85,7 @@
             android:layout_marginTop="4dp"
             android:layout_centerHorizontal="true"/>
 
+        <!-- TextView para exibir a probabilidade do olho direito estar aberto. -->
         <TextView
             android:id="@+id/rightEyeTextView"
             android:layout_width="wrap_content"
@@ -87,6 +94,7 @@
             android:layout_marginTop="4dp"
             android:layout_centerHorizontal="true"/>
 
+        <!-- TextView para exibir a percentagem de fechamento dos olhos (PERCLOS). -->
         <TextView
             android:id="@+id/perclosTextView"
             android:layout_width="wrap_content"
@@ -95,6 +103,7 @@
             android:layout_marginTop="4dp"
             android:layout_centerHorizontal="true"/>
 
+        <!-- TextView para indicar se a detecção considerou o estado como sonolento ou não. -->
         <TextView
             android:id="@+id/drowsyTextView"
             android:layout_width="wrap_content"
@@ -102,12 +111,6 @@
             android:text="perclos: 0%"
             android:layout_marginTop="4dp"
             android:layout_centerHorizontal="true"/>
-
     </LinearLayout>
 
-
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
