@@ -1,7 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_recycler_view"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-</androidx.recyclerview.widget.RecyclerView>
+    <!-- activity_main.xml -->
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seletor de Funções"
+            android:textSize="24sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_text_recognition"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
+            android:id="@+id/btn_text_recognition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Reconhecimento de Texto"
+            android:drawableStart="@android:drawable/ic_menu_camera"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:onClick="startTextRecognitionActivity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.8"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintBottom_toTopOf="@id/btn_face_detection"/>
+
+        <Button
+            android:id="@+id/btn_face_detection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Detecção de Face"
+            android:drawableStart="@android:drawable/ic_media_ff"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:onClick="startFaceDetectionActivity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.8"
+            app:layout_constraintTop_toBottomOf="@id/btn_text_recognition"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintBottom_toBottomOf="@id/btn_drowsiness_detection"/>
+
+        <Button
+            android:id="@+id/btn_drowsiness_detection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Detecção de Sonolência"
+            android:drawableStart="@android:drawable/ic_btn_speak_now"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:onClick="startDrowsinessDetectorActivity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.8"
+            app:layout_constraintTop_toBottomOf="@id/btn_face_detection"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

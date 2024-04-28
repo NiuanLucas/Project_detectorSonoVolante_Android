@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MLSeriesDemonstrator</string>
-    <string name="switch_camera">Switch Camera</string>
-
+    <string name="app_name">DeteccaoSonolencia</string>
+    <string name="image_desc">Imagem selecionada</string>
+    <string name="text_placeholder">O texto reconhecido aparecerá aqui</string>
 </resources>
